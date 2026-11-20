@@ -5,8 +5,8 @@ This directory contains the GCP Cloud Batch job specification and submission hel
 ## 1. Architecture Separation
 
 - **This Container (`OpenSUSI-EDA-Container`)**: Pure open-source EDA runtime (`OpenROAD`, `Yosys`, `KLayout`, `iverilog`, `ngspice`, `Python`, `gcloud`). Contains **no PDK files** and **no MPW shuttle frame integration scripts**.
-- **Design Repository (`JSC-130E_MPW_template` clones)**: Holds RTL, constraints, verification testbench, `design.yaml`, and PDK profile reference.
-- **PDK Overlay (optional GCS URI `GCS_PDK_URI`)**: For foundry-restricted PDKs (e.g., 130 nm `JSC-130E`), PDK views/decks can live in a restricted GCS bucket and be fetched at runtime by `entrypoint.sh`.
+- **Design Repository (`NEW-130E_MPW_template` clones)**: Holds RTL, constraints, verification testbench, `design.yaml`, and PDK profile reference.
+- **PDK Overlay (optional GCS URI `GCS_PDK_URI`)**: For foundry-restricted PDKs (e.g., 130 nm `NEW-130E`), PDK views/decks can live in a restricted GCS bucket and be fetched at runtime by `entrypoint.sh`.
 - **MPW Aggregation (separate downstream stage)**: Consumes only signed-off `mpw_bundle.tar.gz` + `manifest.json` from the Submission Gateway to assemble shuttle-specific frames and slots.
 
 ## 2. One-Time GCP Project Setup
@@ -59,7 +59,7 @@ gcloud storage buckets add-iam-policy-binding "${BUCKET}" \
 
 ```bash
 ./gcp/submit_batch.sh \
-  --repo-dir ../JSC-130E_MPW_template \
+  --repo-dir ../NEW-130E_MPW_template \
   --project "${PROJECT_ID}" \
   --region "${REGION}" \
   --bucket "${BUCKET}" \

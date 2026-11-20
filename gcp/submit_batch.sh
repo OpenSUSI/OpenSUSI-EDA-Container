@@ -4,13 +4,13 @@
 #
 # Usage:
 #   ./gcp/submit_batch.sh \
-#     --repo-dir ../JSC-130E_MPW_template \
+#     --repo-dir ../NEW-130E_MPW_template \
 #     --project opensusi-eda-platform \
 #     --region asia-northeast1 \
 #     --bucket gs://opensusi-mpw-artifacts \
 #     --image asia-northeast1-docker.pkg.dev/opensusi-eda-platform/eda/opensusi-eda:v0.1.0 \
 #     --service-account eda-batch-worker@opensusi-eda-platform.iam.gserviceaccount.com \
-#     [--pdk-uri gs://opensusi-pdks/jsc130e/v1.tar.gz] \
+#     [--pdk-uri gs://opensusi-pdks/new130e/v1.tar.gz] \
 #     [--machine-type n2-standard-4] \
 #     [--spot] \
 #     [--wait]
@@ -103,7 +103,7 @@ import sys, pathlib
 p = pathlib.Path(sys.argv[1]) / "design.yaml"
 if p.exists():
     for line in p.read_text().splitlines():
-        if line.strip().startswith("name:") and "tr1um" in line or "jsc130e" in line:
+        if line.strip().startswith("name:") and "tr1um" in line or "new130e" in line:
             print(line.split(":",1)[1].strip().strip("\"\x27"))
             break
     else:

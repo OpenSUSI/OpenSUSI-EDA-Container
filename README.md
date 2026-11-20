@@ -8,14 +8,14 @@ Standardized, PDK-agnostic, MPW-shuttle-agnostic open-source EDA execution conta
 
 | Included in This Container | Deliberately Excluded (Supplied Separately) |
 | :--- | :--- |
-| **OpenROAD** (+ OpenSTA) — Floorplan, P&R, STA | Foundry PDKs (`TR-1um`, `JSC-130E`, etc.) |
+| **OpenROAD** (+ OpenSTA) — Floorplan, P&R, STA | Foundry PDKs (`TR-1um`, `NEW-130E`, etc.) |
 | **Yosys** (+ `yosys-abc`) — RTL synthesis | MPW shuttle frame / seal-ring / slot aggregation assets |
 | **KLayout (`0.30.9`)** — Headless DRC / LVS / MDP / GDSII | Designer RTL, SDC, and project secrets |
 | **Icarus Verilog (`iverilog` / `vvp`)** — RTL & Gate-level simulation | |
 | **ngspice** — Transistor-level & post-layout SPICE simulation | |
 | **Python 3** (+ PyYAML) & **Google Cloud CLI (`gcloud`)** | |
 
-Because PDK files and shuttle-specific MPW frame integration assets vary per PDK and per MPW shuttle, keeping them out of this image guarantees that the EDA container remains 100% open-source, reusable across processes (`TR-1um` PoC → `JSC-130E` 130 nm), and independently versioned.
+Because PDK files and shuttle-specific MPW frame integration assets vary per PDK and per MPW shuttle, keeping them out of this image guarantees that the EDA container remains 100% open-source, reusable across processes (`TR-1um` PoC → `NEW-130E` 130 nm), and independently versioned.
 
 ---
 
@@ -52,10 +52,10 @@ docker build --platform linux/amd64 \
   -t "opensusi-eda:${IMAGE_VERSION}" .
 ```
 
-### 2. Run a Design Template Repository Locally (e.g., `JSC-130E_MPW_template`)
+### 2. Run a Design Template Repository Locally (e.g., `NEW-130E_MPW_template`)
 ```bash
 docker run --rm --platform linux/amd64 \
-  -v "$(pwd)/../JSC-130E_MPW_template:/work" \
+  -v "$(pwd)/../NEW-130E_MPW_template:/work" \
   "opensusi-eda:${IMAGE_VERSION}" \
   bash flow/run_all.sh
 ```
