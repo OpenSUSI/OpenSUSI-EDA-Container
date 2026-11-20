@@ -10,7 +10,7 @@ Standardized, PDK-agnostic, MPW-shuttle-agnostic open-source EDA execution conta
 | :--- | :--- |
 | **OpenROAD** (+ OpenSTA) — Floorplan, P&R, STA | Foundry PDKs (`TR-1um`, `NEW-130E`, etc.) |
 | **Yosys** (+ `yosys-abc`) — RTL synthesis | MPW shuttle frame / seal-ring / slot aggregation assets |
-| **KLayout (`0.30.9`)** — Headless DRC / LVS / MDP / GDSII | Designer RTL, SDC, and project secrets |
+| **KLayout (`0.30.13`)** — Headless DRC / LVS / MDP / GDSII | Designer RTL, SDC, and project secrets |
 | **Icarus Verilog (`iverilog` / `vvp`)** — RTL & Gate-level simulation | |
 | **ngspice** — Transistor-level & post-layout SPICE simulation | |
 | **Python 3** (+ PyYAML) & **Google Cloud CLI (`gcloud`)** | |
@@ -23,7 +23,7 @@ Because PDK files and shuttle-specific MPW frame integration assets vary per PDK
 
 ```text
 OpenSUSI-EDA-Container/
-├── Dockerfile                    # OpenROAD + Yosys + KLayout 0.30.9 + iverilog + ngspice + gcloud
+├── Dockerfile                    # OpenROAD + Yosys + KLayout 0.30.13 + iverilog + ngspice + gcloud
 ├── versions.env                  # Pinned tool & container versions
 ├── entrypoint.sh                 # Dual-mode entrypoint (Local mount & GCP Cloud Batch GCS mode)
 ├── scripts/

@@ -25,7 +25,10 @@ iverilog -o "${TMPD}/t.vvp" "${TMPD}/t.v"
 vvp "${TMPD}/t.vvp" | grep -q "IVERILOG_OK"
 
 echo "=== Smoke Test: yosys ==="
-yosys -q -p "read_verilog ${TMPD}/t.v; stat"
+cat > "${TMPD}/s.v" <<'EOF'
+module s(input a, input b, output y); assign y = a & b; endmodule
+EOF
+yosys -q -p "read_verilog ${TMPD}/s.v; synth -top s; stat"
 
 echo "=== Smoke Test: openroad ==="
 openroad -exit /dev/null >/dev/null 2>&1 || openroad -version

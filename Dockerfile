@@ -11,7 +11,7 @@ ARG BASE_IMAGE=openroad/orfs:latest
 FROM ${BASE_IMAGE}
 
 ARG IMAGE_VERSION=v0.1.0
-ARG KLAYOUT_VERSION=0.30.9
+ARG KLAYOUT_VERSION=0.30.13
 ARG INSTALL_GCLOUD=true
 
 LABEL org.opencontainers.image.title="OpenSUSI Standard EDA Container" \
