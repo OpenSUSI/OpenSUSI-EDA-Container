@@ -1,0 +1,84 @@
+# ==============================================================================
+# Build, Smoke-Test, and Publish OpenSUSI Standard EDA Container
+# Publishes immutable versioned images to GCP Artifact Registry and/or GHCR.
+# ==============================================================================
+name: build-release
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout OpenSUSI-EDA-Container
+        uses: actions/checkout@v4
+
+      - name: Load pinned versions
+        id: ver
+        run: |
+          source versions.env
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG="${IMAGE_VERSION}-${GITHUB_SHA::7}"
+          fi
+          echo "image_tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "base_image=${BASE_IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "klayout_version=${KLAYOUT_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "install_gcloud=${INSTALL_GCLOUD}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build EDA Container & Execute Built-in Smoke Test
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: opensusi-eda:${{ steps.ver.outputs.image_tag }}
+          build-args: |
+            BASE_IMAGE=${{ steps.ver.outputs.base_image }}
+            IMAGE_VERSION=${{ steps.ver.outputs.image_tag }}
+            KLAYOUT_VERSION=${{ steps.ver.outputs.klayout_version }}
+            INSTALL_GCLOUD=${{ steps.ver.outputs.install_gcloud }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify Tool Versions & ngspice Execution
+        run: |
+          docker run --rm opensusi-eda:${{ steps.ver.outputs.image_tag }} \
+            bash -c "cat /etc/opensusi-eda-versions.json && /opt/opensusi/scripts/smoke_test.sh"
+
+      - name: Push to GHCR (on tag or main)
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          GHCR_IMG="ghcr.io/${{ github.repository_owner }}/opensusi-eda:${{ steps.ver.outputs.image_tag }}"
+          docker tag opensusi-eda:${{ steps.ver.outputs.image_tag }} "${GHCR_IMG}"
+          docker push "${GHCR_IMG}"
+
+      - name: Authenticate & Push to GCP Artifact Registry (when WIF configured)
+        if: github.event_name != 'pull_request' && vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Push to Artifact Registry
+        if: github.event_name != 'pull_request' && vars.GCP_WORKLOAD_IDENTITY_PROVIDER != ''
+        run: |
+          gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+          AR_IMG="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/eda/opensusi-eda:${{ steps.ver.outputs.image_tag }}"
+          docker tag opensusi-eda:${{ steps.ver.outputs.image_tag }} "${AR_IMG}"
+          docker push "${AR_IMG}"

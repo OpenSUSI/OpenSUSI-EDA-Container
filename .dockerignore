@@ -1,0 +1,6 @@
+.git
+.github
+gcp
+README.md
+*.log
+*.tar.gz
